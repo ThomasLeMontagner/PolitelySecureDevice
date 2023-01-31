@@ -2,4 +2,5 @@
 <metadata:Metadata xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:metadata="http://www.polarsys.org/kitalpha/ad/metadata/1.0.0" id="_Ydh68BieEe2At7KsgHtQdQ">
   <viewpointReferences id="_YxupUBieEe2At7KsgHtQdQ" vpId="org.polarsys.capella.core.viewpoint" version="5.2.0"/>
   <viewpointReferences id="_j-i0IBirEe2sdaD3vMy6Ug" vpId="org.polarsys.kitalpha.vp.requirements" version="0.12.2"/>
+  <additionalMetadata href="../RaspberryPi4/RaspberryPi4.afm#_jap_IJpsEe2ZIbdgM6_LKA"/>
 </metadata:Metadata>
