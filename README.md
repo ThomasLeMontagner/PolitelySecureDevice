@@ -3,6 +3,9 @@
 The goal is to develop a device greeting people around based on face recognition. A later version will include the capability to alert the owner/tenant when there is intrusion. <br>
 The development is conducted using a Model-Based System Engineering approach on the software [Capella](https://www.eclipse.org/capella/) to support the elicitation of the system needs and the design of an appropriate architecture.
 
+## Requirements
+* Capella 5.2.0 (to be able to open the model with Capella)
+
 ## System Model
 ### Logical Architecture
 The Logical Architecture describes the main architectural concepts. On the diagram below, the high-level architectural components and their functionalities are presented. Some design decisions are also made such as the choice of an audio message rather than a text message to greet people.
