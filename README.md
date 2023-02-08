@@ -9,8 +9,8 @@ The Logical Architecture describes the main architectural concepts. On the diagr
 
 ![My Image](images/[LAB]_Structure.jpg)
 
-### Physical Archtiecture
-The Physical Archtiecture describes the technological choices. Here we will make use of a RaspberryPi 4 and a camera to detect and recognize faces.
+### Physical Archtitecture
+The Physical Architecture describes the technological choices. Here we will make use of a RaspberryPi 4 and a camera to detect and recognize faces.
 
 #### Implementation of "Greeting"
 ![My Image](images/[PAB]_Greet_human.jpg)
