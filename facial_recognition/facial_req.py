@@ -9,24 +9,17 @@ import time
 import cv2
 import constants
 
-# load the known faces and embeddings along with OpenCV's Haar
-# cascade for face detection
-print("[INFO] loading encodings + face detector...")
-data = pickle.loads(open(constants.ENCODINGP, "rb").read())
-
-# start the FPS counter
-fps = FPS().start()
-
 class face_recogn_engine:
 
 	def __init__(self, encodinsP: str):
+		print("[INFO] loading encodings + face detector...")
+
 		# Determine faces from encodings.pickle file model created from train_model.py
-		self.encodingsP = encodinsP
+		self.data = pickle.loads(open("./facial_recognition/"+constants.ENCODINGP, "rb").read())
+
 		# initialize the video stream and allow the camera sensor to warm up
-		# Set the ser to the followng
-		# src = 0 : for the build in single web cam, could be your laptop webcam
-		# src = 2 : I had to set it to 2 inorder to use the USB webcam attached to my laptop
-		self.vs = VideoStream(src=2,framerate=10).start()
+		# src = 2 : I had to set it to 2 in order to use the USB webcam attached to my laptop
+		self.vs = VideoStream(src=2, framerate=10).start()
 		self.vs = VideoStream(usePiCamera=True).start()
 		time.sleep(2.0)
 
@@ -47,7 +40,7 @@ class face_recogn_engine:
 	def recognize_face(self, encoding):
 		# attempt to match each face in the input image to our known
 		# encodings
-		matches = face_recognition.compare_faces(data["encodings"],
+		matches = face_recognition.compare_faces(self.data["encodings"],
 			encoding)
 		name = constants.UNKNWON 
 
@@ -62,7 +55,7 @@ class face_recogn_engine:
 			# loop over the matched indexes and maintain a count for
 			# each recognized face face
 			for i in matchedIdxs:
-				name = data["names"][i]
+				name = self.data["names"][i]
 				counts[name] = counts.get(name, 0) + 1
 
 			# determine the recognized face with the largest number
