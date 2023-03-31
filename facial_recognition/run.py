@@ -3,7 +3,6 @@ from  facial_req import *
 import constants
 import imutils
 import logging
-import datetime
 
 def main():
     # Initialize the engine for face recognition
@@ -29,16 +28,13 @@ def main():
 
         face_recogn.plot_face_location(boxes, names, frame)
 
-        # Get the current date and time
-        time = datetime.datetime.now()
-
         for name in names:
+            # Log the date, time, and name (or 'unknown')
+            logging.info(f"{name}") # To do: add confidence score, do not print if detected less than 10s ago
+
             if not name in greeted_people and name != constants.UNKNWON:
                 voice_gen.greet(name)
                 greeted_people.append(name)
-
-                # Log the date, time, and name (or 'unknown')
-                logging.info(f"{time.strftime('%Y-%m-%d %H:%M:%S')} {name}")
 
         key = cv2.waitKey(1) & 0xFF
         # quit when 'q' key is pressed
