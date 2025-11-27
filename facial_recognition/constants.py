@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Constants used across the facial recognition scripts."""
 
 # Name when the face is not recognized

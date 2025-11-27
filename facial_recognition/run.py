@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Entry point for running face recognition and greetings."""
+
+from __future__ import annotations
 
 import logging
 

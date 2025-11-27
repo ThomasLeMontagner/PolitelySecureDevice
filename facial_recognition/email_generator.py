@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Send notification emails for security events."""
+
+from __future__ import annotations
 
 import smtplib
 import ssl
@@ -13,9 +13,16 @@ import email_constants
 class EmailClient:
     """Simple SMTP client for sending alerts."""
 
-    sender_email = "thomas.lemontagner@gmail.com"
-    sender_password = email_constants.email_password
-    receiver_email = "thomas.le-montagner@hotmail.com"
+    def __init__(
+        self,
+        sender_email: str | None = None,
+        sender_password: str | None = None,
+        receiver_email: str | None = None,
+    ) -> None:
+        """Initialize email credentials from environment or overrides."""
+        self.sender_email: str = sender_email or email_constants.SENDER_EMAIL
+        self.sender_password: str = sender_password or email_constants.SENDER_PASSWORD
+        self.receiver_email: str = receiver_email or email_constants.RECEIVER_EMAIL
 
     def send_email(self, subject: str, body: str) -> None:
         """Send an email with the provided subject and HTML body."""

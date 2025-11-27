@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Face recognition engine built on the face_recognition library."""
+
+from __future__ import annotations
 
 from pathlib import Path
 import pickle

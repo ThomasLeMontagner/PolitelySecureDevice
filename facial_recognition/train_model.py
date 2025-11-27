@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Train a facial recognition model and serialize encodings."""
+
+from __future__ import annotations
 
 from pathlib import Path
 import pickle

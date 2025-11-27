@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Capture headshots from the PiCamera into the dataset directory."""
+
+from __future__ import annotations
 
 from pathlib import Path
 

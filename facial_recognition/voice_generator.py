@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Utilities for generating spoken messages."""
+
+from __future__ import annotations
 
 import pyttsx3
 
