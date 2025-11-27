@@ -1,0 +1,5 @@
+face_recognition
+imutils
+opencv-python
+picamera
+pyttsx3
