@@ -1,11 +1,20 @@
+from __future__ import annotations
+
+"""Utilities for generating spoken messages."""
+
 import pyttsx3
 
-class voice_generator():
-    def __init__(self):
-        # Initialize an engine for voice generator
-        self.engine = pyttsx3.init()
+from pyttsx3.engine import Engine
 
-    # Greet the person by saying his name
-    def greet(self, name):        
-        self.engine.say("Hello, {}".format(name))
+
+class VoiceGenerator:
+    """Generate spoken greetings using pyttsx3."""
+
+    def __init__(self, engine: Engine | None = None) -> None:
+        """Initialize the voice generator."""
+        self.engine: Engine = engine or pyttsx3.init()
+
+    def greet(self, name: str) -> None:
+        """Speak a greeting to the provided person."""
+        self.engine.say(f"Hello, {name}")
         self.engine.runAndWait()

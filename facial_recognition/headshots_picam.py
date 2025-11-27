@@ -1,35 +1,50 @@
+from __future__ import annotations
+
+"""Capture headshots from the PiCamera into the dataset directory."""
+
+from pathlib import Path
+
 import cv2
 from picamera import PiCamera
 from picamera.array import PiRGBArray
 
-name = 'Raquel'
 
-cam = PiCamera()
-cam.resolution = (512, 304)
-cam.framerate = 10
-rawCapture = PiRGBArray(cam, size=(512, 304))
-    
-img_counter = 0
+def capture_headshots(
+    person_name: str,
+    output_dir: str = "dataset",
+    resolution: tuple[int, int] = (512, 304),
+    framerate: int = 10,
+) -> None:
+    """Save headshots for the provided person until ESC is pressed."""
+    output_path = Path(output_dir) / person_name
+    output_path.mkdir(parents=True, exist_ok=True)
 
-while True:
-    for frame in cam.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+    camera = PiCamera()
+    camera.resolution = resolution
+    camera.framerate = framerate
+    raw_capture = PiRGBArray(camera, size=resolution)
+
+    img_counter = 0
+    for frame in camera.capture_continuous(
+        raw_capture, format="bgr", use_video_port=True
+    ):
         image = frame.array
         cv2.imshow("Press Space to take a photo", image)
-        rawCapture.truncate(0)
-    
-        k = cv2.waitKey(1)
-        rawCapture.truncate(0)
-        if k%256 == 27: # ESC pressed
-            break
-        elif k%256 == 32:
-            # SPACE pressed
-            img_name = "dataset/"+ name +"/image_{}.jpg".format(img_counter)
-            cv2.imwrite(img_name, image)
-            print("{} written!".format(img_name))
-            img_counter += 1
-            
-    if k%256 == 27:
-        print("Escape hit, closing...")
-        break
+        raw_capture.truncate(0)
 
-cv2.destroyAllWindows()
+        key = cv2.waitKey(1)
+        raw_capture.truncate(0)
+        if key % 256 == 27:
+            print("Escape hit, closing...")
+            break
+        if key % 256 == 32:
+            img_name = output_path / f"image_{img_counter}.jpg"
+            cv2.imwrite(str(img_name), image)
+            print(f"{img_name} written!")
+            img_counter += 1
+
+    cv2.destroyAllWindows()
+
+
+if __name__ == "__main__":
+    capture_headshots("Raquel")

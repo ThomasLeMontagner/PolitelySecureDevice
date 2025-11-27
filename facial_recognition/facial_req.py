@@ -1,82 +1,87 @@
-#! /usr/bin/python
+from __future__ import annotations
 
-# import the necessary packages
-from imutils.video import VideoStream
-from imutils.video import FPS
-import face_recognition
+"""Face recognition engine built on the face_recognition library."""
+
+from pathlib import Path
 import pickle
 import time
+from typing import Any
+
 import cv2
+import face_recognition
+from imutils.video import VideoStream
+
 import constants
 
-class face_recogn_engine:
 
-	def __init__(self, encodinsP: str):
-		print("[INFO] loading encodings + face detector...")
+class FaceRecognitionEngine:
+    """Handle face detection, recognition, and visualization."""
 
-		# Determine faces from encodings.pickle file model created from train_model.py
-		self.data = pickle.loads(open("./facial_recognition/"+constants.ENCODINGP, "rb").read())
+    def __init__(
+        self,
+        encodings_path: str,
+        video_source: int = 2,
+        use_pi_camera: bool = True,
+        warmup_seconds: float = 2.0,
+    ) -> None:
+        """Load encodings and initialize the video stream."""
+        self.data = self._load_encodings(encodings_path)
+        if use_pi_camera:
+            self.vs = VideoStream(usePiCamera=True, framerate=10).start()
+        else:
+            self.vs = VideoStream(src=video_source, framerate=10).start()
+        time.sleep(warmup_seconds)
 
-		# initialize the video stream and allow the camera sensor to warm up
-		# src = 2 : I had to set it to 2 in order to use the USB webcam attached to my laptop
-		self.vs = VideoStream(src=2, framerate=10).start()
-		self.vs = VideoStream(usePiCamera=True).start()
-		time.sleep(2.0)
+    def _load_encodings(self, encodings_path: str) -> dict[str, list[Any]]:
+        """Read serialized facial encodings from disk."""
+        path = Path(__file__).resolve().parent / encodings_path
+        with path.open("rb") as file:
+            return pickle.loads(file.read())
 
-	# Detect faces in a frame and return the facial embeddings
-	def locate_faces(self, frame):
-		boxes = face_recognition.face_locations(frame)
-		return boxes
-	
-	# compute the facial embeddings for each face bounding box
-	def recognize_all_faces(self, frame, boxes):
-		encodings = face_recognition.face_encodings(frame, boxes)
-		names = []
-		for encoding in encodings:
-			names.append(self.recognize_face(encoding))
-		return names
+    def locate_faces(self, frame: Any) -> list[tuple[int, int, int, int]]:
+        """Detect faces in a frame and return bounding boxes."""
+        return face_recognition.face_locations(frame)
 
-	# Return the name of the face if recognize, otherwise "Unknown"
-	def recognize_face(self, encoding):
-		# attempt to match each face in the input image to our known
-		# encodings
-		matches = face_recognition.compare_faces(self.data["encodings"],
-			encoding)
-		name = constants.UNKNWON 
+    def recognize_all_faces(
+        self, frame: Any, boxes: list[tuple[int, int, int, int]]
+    ) -> list[str]:
+        """Compute names for each detected face."""
+        encodings = face_recognition.face_encodings(frame, boxes)
+        names: list[str] = []
+        for encoding in encodings:
+            names.append(self.recognize_face(encoding))
+        return names
 
-		# check to see if we have found a match
-		if True in matches:
-			# find the indexes of all matched faces then initialize a
-			# dictionary to count the total number of times each face
-			# was matched
-			matchedIdxs = [i for (i, b) in enumerate(matches) if b]
-			counts = {}
+    def recognize_face(self, encoding: Any) -> str:
+        """Return the name of a recognized face or the unknown constant."""
+        matches = face_recognition.compare_faces(self.data["encodings"], encoding)
+        name = constants.UNKNWON
 
-			# loop over the matched indexes and maintain a count for
-			# each recognized face face
-			for i in matchedIdxs:
-				name = self.data["names"][i]
-				counts[name] = counts.get(name, 0) + 1
+        if True in matches:
+            matched_idxs = [index for (index, match) in enumerate(matches) if match]
+            counts: dict[str, int] = {}
 
-			# determine the recognized face with the largest number
-			# of votes (note: in the event of an unlikely tie Python
-			# will select first entry in the dictionary)
-			name = max(counts, key=counts.get)
-		return name
-	
-	def plot_face_location(self, boxes, names, frame):
-		# loop over the recognized faces
-		for ((top, right, bottom, left), name) in zip(boxes, names):
-			# draw the predicted face name on the image - color is in BGR
-			cv2.rectangle(frame, (left, top), (right, bottom),
-				(0, 255, 225), 2)
-			y = top - 15 if top - 15 > 15 else top + 15
-			cv2.putText(frame, name, (left, y), cv2.FONT_HERSHEY_SIMPLEX,
-				.8, (0, 255, 255), 2)
+            for index in matched_idxs:
+                match_name = self.data["names"][index]
+                counts[match_name] = counts.get(match_name, 0) + 1
 
-		# display the image to our screen
-		cv2.imshow("Facial Recognition is Running", frame)
-	
-	def stop_engine(self):
-		cv2.destroyAllWindows()
-		self.vs.stop()
+            name = max(counts, key=counts.get)
+        return name
+
+    def plot_face_location(
+        self, boxes: list[tuple[int, int, int, int]], names: list[str], frame: Any
+    ) -> None:
+        """Draw detections and labels onto the provided frame."""
+        for ((top, right, bottom, left), name) in zip(boxes, names):
+            cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 225), 2)
+            y_coord = top - 15 if top - 15 > 15 else top + 15
+            cv2.putText(
+                frame, name, (left, y_coord), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2
+            )
+
+        cv2.imshow("Facial Recognition is Running", frame)
+
+    def stop_engine(self) -> None:
+        """Release resources for the video stream."""
+        cv2.destroyAllWindows()
+        self.vs.stop()
