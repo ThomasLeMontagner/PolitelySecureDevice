@@ -11,7 +11,7 @@ import cv2
 import face_recognition
 from imutils.video import VideoStream
 
-import constants
+from facial_recognition import constants
 
 
 class FaceRecognitionEngine:
@@ -19,7 +19,7 @@ class FaceRecognitionEngine:
 
     def __init__(
         self,
-        encodings_path: str,
+        encodings_path: str | Path = constants.ENCODINGS_PATH,
         video_source: int = 2,
         use_pi_camera: bool = True,
         warmup_seconds: float = 2.0,
@@ -32,9 +32,9 @@ class FaceRecognitionEngine:
             self.vs = VideoStream(src=video_source, framerate=10).start()
         time.sleep(warmup_seconds)
 
-    def _load_encodings(self, encodings_path: str) -> dict[str, list[Any]]:
+    def _load_encodings(self, encodings_path: str | Path) -> dict[str, list[Any]]:
         """Read serialized facial encodings from disk."""
-        path = Path(__file__).resolve().parent / encodings_path
+        path = Path(encodings_path)
         with path.open("rb") as file:
             return pickle.loads(file.read())
 

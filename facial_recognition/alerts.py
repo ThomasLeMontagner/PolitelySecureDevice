@@ -7,7 +7,7 @@ import ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-import email_constants
+from facial_recognition import email_settings
 
 
 class EmailClient:
@@ -20,9 +20,9 @@ class EmailClient:
         receiver_email: str | None = None,
     ) -> None:
         """Initialize email credentials from environment or overrides."""
-        self.sender_email: str = sender_email or email_constants.SENDER_EMAIL
-        self.sender_password: str = sender_password or email_constants.SENDER_PASSWORD
-        self.receiver_email: str = receiver_email or email_constants.RECEIVER_EMAIL
+        self.sender_email: str = sender_email or email_settings.SENDER_EMAIL
+        self.sender_password: str = sender_password or email_settings.SENDER_PASSWORD
+        self.receiver_email: str = receiver_email or email_settings.RECEIVER_EMAIL
 
     def send_email(self, subject: str, body: str) -> None:
         """Send an email with the provided subject and HTML body."""

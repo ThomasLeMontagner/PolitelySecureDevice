@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 import pickle
+from pathlib import Path
 from typing import Any
 
 import cv2
 import face_recognition
 from imutils import paths
+
+from facial_recognition import constants
 
 
 def train_model(dataset_dir: str = "dataset") -> dict[str, list[Any]]:
@@ -34,10 +36,13 @@ def train_model(dataset_dir: str = "dataset") -> dict[str, list[Any]]:
     return {"encodings": known_encodings, "names": known_names}
 
 
-def save_encodings(data: dict[str, list[Any]], output_path: str = "encodings.pickle") -> None:
+def save_encodings(
+    data: dict[str, list[Any]], output_path: str | Path = constants.ENCODINGS_PATH
+) -> None:
     """Serialize encodings to disk."""
     print("[INFO] serializing encodings...")
-    with open(output_path, "wb") as file:
+    path = Path(output_path)
+    with path.open("wb") as file:
         file.write(pickle.dumps(data))
 
 

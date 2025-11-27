@@ -8,9 +8,18 @@ Device that greets recognized faces and can alert the tenant on intrusion. The a
   - `ALERT_SENDER_EMAIL`
   - `ALERT_EMAIL_PASSWORD`
   - `ALERT_RECEIVER_EMAIL`
-- Train encodings: `python facial_recognition/train_model.py`
-- Run recognition + greeting loop: `python facial_recognition/run.py`
-- Capture new headshots (PiCamera): `python facial_recognition/headshots_picam.py` (press Space to save, Esc to quit)
+- Train encodings (writes `facial_recognition/encodings.pickle`): `python -m facial_recognition.training`
+- Run recognition + greeting loop: `python -m facial_recognition.app`
+- Capture new headshots (PiCamera): `python -m facial_recognition.capture` (press Space to save, Esc to quit)
+
+## Module layout
+- `facial_recognition/app.py`: main recognition + greeting loop
+- `facial_recognition/recognition.py`: face detection/recognition engine
+- `facial_recognition/training.py`: build and persist face encodings
+- `facial_recognition/capture.py`: collect training headshots from PiCamera
+- `facial_recognition/speech.py`: text-to-speech greetings
+- `facial_recognition/alerts.py` & `email_settings.py`: email alert client + env-driven credentials
+- `facial_recognition/constants.py`: shared runtime constants (encoding path, labels)
 
 ## Requirements
 - Capella 5.2.0 (to open the system model)

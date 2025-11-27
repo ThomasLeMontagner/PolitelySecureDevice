@@ -7,14 +7,14 @@ import logging
 import cv2
 import imutils
 
-import constants
-from facial_req import FaceRecognitionEngine
-from voice_generator import VoiceGenerator
+from facial_recognition import constants
+from facial_recognition.recognition import FaceRecognitionEngine
+from facial_recognition.speech import VoiceGenerator
 
 
 def main() -> None:
     """Start the recognition loop and greet recognized faces."""
-    face_recognizer = FaceRecognitionEngine(constants.ENCODINGP)
+    face_recognizer = FaceRecognitionEngine()
     voice_gen = VoiceGenerator()
     greeted_people: list[str] = []
 
