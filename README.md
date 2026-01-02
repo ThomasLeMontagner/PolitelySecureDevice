@@ -20,6 +20,15 @@ Device that greets recognized faces and can alert the tenant on intrusion. The a
 - `facial_recognition/speech.py`: text-to-speech greetings
 - `facial_recognition/alerts.py` & `email_settings.py`: email alert client + env-driven credentials
 - `facial_recognition/constants.py`: shared runtime constants (encoding path, labels)
+- `facial_recognition/validation.py`: evaluate encodings against a labeled validation set
+
+## Validation & Threshold Tuning
+1) Create a labeled validation folder similar to the training dataset:
+   - `validation/<person_name>/*.jpg`
+2) Run validation logging:
+   - `python -m facial_recognition.validation --validation-dir validation`
+3) Review `validation.log` and tune `MATCH_THRESHOLD` in `facial_recognition/constants.py`
+   (or pass `--threshold` to the validation script) until false accepts/unknowns match your needs.
 
 ## Requirements
 - Capella 5.2.0 (to open the system model)
