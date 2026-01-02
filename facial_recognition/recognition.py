@@ -23,9 +23,11 @@ class FaceRecognitionEngine:
         video_source: int = 2,
         use_pi_camera: bool = True,
         warmup_seconds: float = 2.0,
+        match_threshold: float = constants.MATCH_THRESHOLD,
     ) -> None:
         """Load encodings and initialize the video stream."""
         self.data = self._load_encodings(encodings_path)
+        self.match_threshold = match_threshold
         if use_pi_camera:
             self.vs = VideoStream(usePiCamera=True, framerate=10).start()
         else:
@@ -38,35 +40,36 @@ class FaceRecognitionEngine:
         with path.open("rb") as file:
             return pickle.loads(file.read())
 
-    def locate_faces(self, frame: Any) -> list[tuple[int, int, int, int]]:
-        """Detect faces in a frame and return bounding boxes."""
-        return face_recognition.face_locations(frame)
+    def locate_faces(self, rgb_frame: Any) -> list[tuple[int, int, int, int]]:
+        """Detect faces in an RGB frame and return bounding boxes."""
+        return face_recognition.face_locations(rgb_frame)
 
     def recognize_all_faces(
-        self, frame: Any, boxes: list[tuple[int, int, int, int]]
-    ) -> list[str]:
-        """Compute names for each detected face."""
-        encodings = face_recognition.face_encodings(frame, boxes)
+        self, rgb_frame: Any, boxes: list[tuple[int, int, int, int]]
+    ) -> tuple[list[str], list[float]]:
+        """Compute names and distances for each detected face."""
+        encodings = face_recognition.face_encodings(rgb_frame, boxes)
         names: list[str] = []
+        distances: list[float] = []
         for encoding in encodings:
-            names.append(self.recognize_face(encoding))
-        return names
+            name, distance = self.recognize_face(encoding)
+            names.append(name)
+            distances.append(distance)
+        return names, distances
 
-    def recognize_face(self, encoding: Any) -> str:
-        """Return the name of a recognized face or the unknown constant."""
-        matches = face_recognition.compare_faces(self.data["encodings"], encoding)
-        name = constants.UNKNWON
+    def recognize_face(self, encoding: Any) -> tuple[str, float]:
+        """Return the name and distance for a recognized face."""
+        distances = face_recognition.face_distance(self.data["encodings"], encoding)
+        if len(distances) == 0:
+            return constants.UNKNOWN, float("inf")
 
-        if True in matches:
-            matched_idxs = [index for (index, match) in enumerate(matches) if match]
-            counts: dict[str, int] = {}
-
-            for index in matched_idxs:
-                match_name = self.data["names"][index]
-                counts[match_name] = counts.get(match_name, 0) + 1
-
-            name = max(counts, key=counts.get)
-        return name
+        best_index = int(distances.argmin())
+        best_distance = float(distances[best_index])
+        if best_distance <= self.match_threshold:
+            name = self.data["names"][best_index]
+        else:
+            name = constants.UNKNOWN
+        return name, best_distance
 
     def plot_face_location(
         self, boxes: list[tuple[int, int, int, int]], names: list[str], frame: Any

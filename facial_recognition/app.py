@@ -27,15 +27,21 @@ def main() -> None:
     while True:
         frame = face_recognizer.vs.read()
         frame = imutils.resize(frame, width=500)
+        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-        boxes = face_recognizer.locate_faces(frame)
-        names = face_recognizer.recognize_all_faces(frame, boxes)
+        boxes = face_recognizer.locate_faces(rgb_frame)
+        names, distances = face_recognizer.recognize_all_faces(rgb_frame, boxes)
         face_recognizer.plot_face_location(boxes, names, frame)
 
-        for name in names:
-            logging.info("%s", name)  # TODO: add confidence score and debounce greetings
+        for name, distance in zip(names, distances):
+            logging.info(
+                "name=%s distance=%.3f threshold=%.3f",
+                name,
+                distance,
+                face_recognizer.match_threshold,
+            )
 
-            if name not in greeted_people and name != constants.UNKNWON:
+            if name not in greeted_people and name != constants.UNKNOWN:
                 voice_gen.greet(name)
                 greeted_people.append(name)
 
